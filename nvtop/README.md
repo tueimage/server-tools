@@ -5,12 +5,13 @@ Equivalent of the Linux `top` command for NVIDIA GPUs.
 Requires the NVIDIA drivers and specifically the `nvidia-smi` command to run.  `nvtop` makes system calls to `nvidia-smi` and the `ps` command.
 
 ## Options
-`nvtop` has two command line options:
+`nvtop` has three command line options:
 
-* `nvtop -c` makes the view more compact by leaving out the graphs of the current GPU usage
-* `nvtop -g=1,2,3` only shows the tables for GPUs 1, 2, and 3
+* `nvtop -h` or `nvtop --help` displays this text;
+* `nvtop -c` or `nvtop --compact` makes the view more compact by leaving out the graphs;
+* `nvtop -g=1,2,3` only shows the tables for GPUs 1, 2, and 3.
 
-These options can be mixed i.e. `nvtop -c -g=1,2,3` shows compact tables for GPUs 1, 2, and 3.
+The latter two options can be mixed i.e. `nvtop -c -g=1,2,3` shows compact tables for GPUs 1, 2, and 3.
 
 ## What do the colors mean?
 The graphs are green when there is low usage, and turn red when they are more than 80% full.
