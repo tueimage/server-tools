@@ -17,10 +17,12 @@ class NvidiaSMI:
     """Process nvidia-smi output"""
 
     def __init__(self):
-        self.gpu_names = self.gpu_names()
-        self.nvidia_smi = self.nvidia_smi()
+        self.gpu_names = self._gpu_names()
+        self.nvidia_smi = self._nvidia_smi()
+        self.general_info = self._general_info()
+        self.process_info = self._process_info()
 
-    def nvidia_smi(self):
+    def _nvidia_smi(self):
         """Run nvidia-smi without extra options and returns output as str"""
         proc = subprocess.Popen(['nvidia-smi'],
                                 stderr=subprocess.PIPE,
@@ -31,7 +33,7 @@ class NvidiaSMI:
             raise EnvironmentError('Failed to run nvidia-smi.')
         return out.decode()
 
-    def gpu_names(self):
+    def _gpu_names(self):
         """Run nvidia-smi to list GPUs and returns GPU names as list of str"""
         proc = subprocess.Popen(['nvidia-smi', '-L'],
                                 stderr=subprocess.PIPE,
@@ -42,7 +44,7 @@ class NvidiaSMI:
             raise EnvironmentError('Failed to run nvidia-smi.')
         return out.decode().split('\n')[:-1]
 
-    def general_info(self):
+    def _general_info(self):
         """Parse the general info part of the nvidia-smi output and for each
         GPU extracts operating parameters (temperature, memory use, etc.),
         returned as a list with for each GPU a dictionary"""
@@ -85,7 +87,7 @@ class NvidiaSMI:
             general_info.append(d)
         return general_info
 
-    def process_info(self):
+    def _process_info(self):
         """Combine the information from nvidia-smi and the pid info for every
         pid, enabling printing the pid, username, gpu memory, ram, cpu etc."""
         process_lines = self.nvidia_smi.split('=====|')[-1].split('\n')[1:-2]

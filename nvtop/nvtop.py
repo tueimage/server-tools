@@ -25,7 +25,7 @@ Equivalent of the Linux `top` command for NVIDIA GPUs.
 Options
 -------
 * `nvtop -c` makes the view more compact by leaving out the graphs of the current GPU usage
-* `nvtop -g=1,2,3` only shows the tables for GPUs 1, 2, and 3
+* `nvtop -g=X` only shows the tables for GPUs in the list X, e.g. nvtop -g=1 only shows GPU 1, nvtop -g=1,2 shows GPUs 1 and 2
 
 These options can be mixed i.e. `nvtop -c -g=1,2,3` shows compact tables for GPUs 1, 2, and 3.
 
