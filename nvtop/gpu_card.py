@@ -59,8 +59,8 @@ class GPUCard:
     parameters and the process info for that GPU"""
     def __init__(self, gpu_id, nvidia_smi_output):
         nv = nvidia_smi_output
-        self.info = nv.general_info()
-        self.proc = nv.process_info()
+        self.info = nv.general_info
+        self.proc = nv.process_info
         self.gpu_id = gpu_id
         _, line_width = os.popen('stty size', 'r').read().split()
         self.line_width = int(line_width)
