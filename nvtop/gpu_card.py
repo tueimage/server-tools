@@ -57,10 +57,11 @@ class Bar:
 class GPUCard:
     """Print the info for a GPU, with both a header containing the current
     parameters and the process info for that GPU"""
-    def __init__(self, gpu_id, nvidia_smi_output):
+    def __init__(self, gpu_id, nvidia_smi_output, excluded_users):
         nv = nvidia_smi_output
         self.info = nv.general_info
         self.proc = nv.process_info
+        self.excluded_users = excluded_users
         self.gpu_id = gpu_id
         _, line_width = os.popen('stty size', 'r').read().split()
         self.line_width = int(line_width)
@@ -143,7 +144,8 @@ class GPUCard:
 
     def process_part(self, compact=False):
         proc_for_gpu = [line for line in self.proc
-                        if line['gpu_id'] == str(self.gpu_id)]
+                        if line['gpu_id'] == str(self.gpu_id)
+                        and line['user'] not in self.excluded_users]
         format_str = (' {user:9s} {pid:>6s}   {cpu:>4s}   {mem:>4s}'
                       '   {gpu_mem:>10s}   {command:100s}'
                       )

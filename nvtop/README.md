@@ -9,7 +9,7 @@ Requires the NVIDIA drivers and specifically the `nvidia-smi` command to run.  `
 
 * `nvtop -h` or `nvtop --help` displays this text;
 * `nvtop -c` or `nvtop --compact` makes the view more compact by leaving out the graphs;
-* `nvtop -g=X` only shows the tables for GPUs in the list X, e.g. nvtop -g=1 only shows GPU 1, nvtop -g=1,2 shows GPUs 1 and 2
+* `nvtop -g=1,2,3` only shows the tables for GPUs 1, 2, and 3.
 
 The latter two options can be mixed i.e. `nvtop -c -g=1,2,3` shows compact tables for GPUs 1, 2, and 3.
 

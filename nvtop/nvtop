@@ -1,1 +1,1 @@
-watch -n 1 --color -t python nvtop.py $@
+watch -n .5 --color -t python /opt/nvtop/nvtop.py $@

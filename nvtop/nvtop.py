@@ -47,6 +47,9 @@ To quit nvtop, press CTRL-C.
     # Make compact tables if '-c' is used:
     compact = '-c' in args or '--compact' in args
 
+    # Check if show hidden is turned on
+    excluded_users = ['root', 'gdm'] if '-a' not in args else []
+
     # Select the GPUs in the '-g' option:
     gpus = [x[3:].split(',') for x in args if x[:3] == '-g=']
     if gpus:
@@ -64,9 +67,10 @@ To quit nvtop, press CTRL-C.
 
     # Print the valid GPU tables
     for gpu_id in valid_gpus:
-        card = GPUCard(gpu_id, nv)
+        card = GPUCard(gpu_id, nv, excluded_users=excluded_users)
         print(card.title_part())
         if not compact:
             print(card.header_part())
         print(card.process_part())
-    print(Format.BOLD + card.line_width * '.' + Format.END)
+    print(Format.BOLD + (card.line_width - 25) * '-' + ' Press CTRL-C to quit'
+        ' ---' + Format.END)
