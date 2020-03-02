@@ -2,6 +2,20 @@
 
 """
 Here we define all the necessary functions to choose a GPU device while using Keras Backend (Tensorflow)
+
+
+##Example of usage Keras (Compatible with tensorflow < 2.0)
+
+index_gpu, p_gpu = get_free_gpu_id(claim_memory=0.99)
+sess = get_gpu_session(index_gpu, p_gpu)
+K.tensorflow_backend.set_session(sess)
+
+
+##Example of usage torch
+
+index_gpu, p_gpu = get_free_gpu_id(claim_memory=0.99)
+device = torch.device("cuda:{}".format(str(index_gpu)) if torch.cuda.is_available() else "cpu")
+model.to(device)
 """
 
 import subprocess
