@@ -1,21 +1,7 @@
 # encoding: utf-8
 
 """
-Here we define all the necessary functions to choose a GPU device while using Keras Backend (Tensorflow)
-
-
-##Example of usage Keras (Compatible with tensorflow < 2.0)
-
-index_gpu, p_gpu = get_free_gpu_id(claim_memory=0.99)
-sess = get_gpu_session(index_gpu, p_gpu)
-K.tensorflow_backend.set_session(sess)
-
-
-##Example of usage torch
-
-index_gpu, p_gpu = get_free_gpu_id(claim_memory=0.99)
-device = torch.device("cuda:{}".format(str(index_gpu)) if torch.cuda.is_available() else "cpu")
-model.to(device)
+Functions that help to select a GPU.
 """
 
 import subprocess
@@ -25,7 +11,8 @@ import keras.backend as K
 
 
 def parse_free_memory(output):
-    """
+    """ Function to parse the output of nvidia-smi call.
+    
      $ nvidia-smi -q -d MEMORY -i 1
     ==============NVSMI LOG==============
     Timestamp                           : Wed Jan 31 14:13:22 2018
@@ -55,7 +42,8 @@ def parse_free_memory(output):
 
 
 def get_num_gpu():
-    """
+    """ Used to get the amount of GPU's that reside in the machine
+    
     We can also use from tensorflow.python.client
         import device_lib
         device_lib.device_list()
@@ -70,15 +58,15 @@ def get_num_gpu():
 
 
 def get_free_gpu_id(claim_memory):
-    """
-    nvidia-smi -q -d MEMORY -i
+    """ Used to get a GPU index that satisfies the requested memory.
 
-    :param claim_memory: either a fraction (of the whole gpu mem) or a set amount of MiB that you wish to occupy.
+    :param claim_memory: A filter on the GPU's based on the amount of free memory available.
+    Either a float in the range [0.0, 1.0], which represent a fraction of the total available GPU memory. 
+    Or a float in the range (1.0, ...) that represents the desired amount of GPU memory.
     :return: index of gpu and percentage.
     """
 
-    # Used when not viable GPU was found under current settings
-    safety_factor = 0.9
+    safety_factor = 0.9  # Used after a GPU has been selected.
     ngpus = get_num_gpu()
     avail = [0] * ngpus
     total_avail = [0] * ngpus
@@ -108,16 +96,7 @@ def get_free_gpu_id(claim_memory):
         print('No viable GPU was found. Choosing alternative option.')
         p_claim_memory = max(percent_avail)
         gpu_ind = percent_avail.index(p_claim_memory)
-        p_claim_memory = safety_factor * p_claim_memory
-        # Possibility to offer a choice of a new GPU
-        # gpu_ind = -1
-        # avail_mem_value = max(percent_avail)
-        # alt_gpu_ind = percent_avail.index(avail_mem_value)
-        # total_avail_value = total_avail[alt_gpu_ind]
-        # p_claim_memory = {'alt_index_gpu': alt_gpu_ind,
-        #                   'alt_avail_mem_perc': avail_mem_value,
-        #                   'alt_avail_mem_mib': avail_mem_value*total_avail_value}
-
+        p_claim_memory = safety_factor * p_claim_mem
     else:
         avail_mem_value = max(avail_mem_filter)
         gpu_ind = avail_mem_filter.index(avail_mem_value)
@@ -133,8 +112,7 @@ def get_free_gpu_id(claim_memory):
 
 
 def get_gpu_session(index_gpu, p_gpu, verbose=True):
-    """
-    Sets and returns the session with the given param.
+    """ Keras functionality to set and return a session with the given GPU settings.
 
     :param index_gpu: the GPU that you want
     :param p_gpu: the fraction of total mem that you need
@@ -161,7 +139,18 @@ def get_gpu_session(index_gpu, p_gpu, verbose=True):
 
 
 if __name__ == "__main__":
-    # Example of usage
+    ## Example usage in Keras (tensorflow <2.0)
     index_gpu, p_gpu = get_free_gpu_id(claim_memory=0.5)
     sess = get_gpu_session(index_gpu, p_gpu)
     K.tensorflow_backend.set_session(sess)
+       
+    ## Example usage in Keras (tensorflow >= 2.0)
+    # Though this approach might fail in the future because of current developments
+    index_gpu, p_gpu = hnvidia.get_free_gpu_id(claim_memory=0.5)
+    sess = hnvidia.get_gpu_session(index_gpu, p_gpu)
+    tf.compat.v1.keras.backend.set_session(sess)
+
+    ## Example usage Torch
+    index_gpu, p_gpu = get_free_gpu_id(claim_memory=0.99)
+    device = torch.device("cuda:{}".format(str(index_gpu)) if torch.cuda.is_available() else "cpu")
+    model.to(device)
