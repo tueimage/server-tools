@@ -10,7 +10,7 @@ from __future__ import print_function, division
 import subprocess
 import os
 
-from nvtop.pid import PIDInfo  # This should be removed.. but setting source directory went ill.
+from pid import PIDInfo
 
 
 class NvidiaSMI:
