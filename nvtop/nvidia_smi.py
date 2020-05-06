@@ -10,17 +10,24 @@ from __future__ import print_function, division
 import subprocess
 import os
 
-from pid import PIDInfo
+from nvtop.pid import PIDInfo  # This should be removed.. but setting source directory went ill.
 
 
 class NvidiaSMI:
     """Process nvidia-smi output"""
 
-    def __init__(self):
-        self.gpu_names = self._gpu_names()
-        self.nvidia_smi = self._nvidia_smi()
-        self.general_info = self._general_info()
-        self.process_info = self._process_info()
+    def __init__(self, test_mode=False):
+        # If we are not in test mode.. then continue
+        if test_mode:
+            with open('nvtop/nvidia_smi_L.txt', 'r') as f:
+                self.gpu_names = f.read().split('\n')[:-1]
+            with open('nvtop/nvidia_output_test.txt', 'r') as f:
+                self.nvidia_smi = f.read()
+        else:
+            self.gpu_names = self._gpu_names()
+            self.nvidia_smi = self._nvidia_smi()
+            self.general_info = self._general_info()
+            self.process_info = self._process_info()
 
     def _nvidia_smi(self):
         """Run nvidia-smi without extra options and returns output as str"""
@@ -74,7 +81,8 @@ class NvidiaSMI:
             d['disp_a'] = parse(name_line[-4])
             d['uncorr_ecc'] = parse(name_line[-2])
 
-            d['fan'] = int(info_line[1][:-1])
+            # Conditional statement to process Fan values 'ERR%'
+            d['fan'] = int(info_line[1][:-1]) if info_line[1][:-1].isdigit() else -1
             d['temp'] = int(info_line[2][:-1])
             d['perf'] = info_line[3]
             d['pwr_usage'] = int(parse(info_line[4][:-1]))
@@ -114,5 +122,10 @@ class NvidiaSMI:
                 pass
         return process_list
 
+
 if __name__ == '__main__':
-    print(NvidiaSMI().process_info())
+    # print(NvidiaSMI().process_info())
+
+    # # # Testing NvidiaSMI on the test text file
+    A = NvidiaSMI(test_mode=True)
+    A._general_info()
