@@ -61,17 +61,21 @@ class NvidiaSMI:
                 return -1
             else:
                 return string
-
+        # Split the information of the GPU from the current processes
         header = self.nvidia_smi.split('Processes:')[0]
         lines = header.split('\n')
 
         # Lines 7:-3 actually contain the parameters
-        gpu_info = lines[7:-3]
-
+        starting_index = next(i for i, x in enumerate(lines) if x.startswith('|==='))
+        gpu_info = lines[starting_index+1:-3]
+        
+        # In some output of nvidia-smi.. the amount of lines per GPU is increased
+        # With this we account for the amount of lines that we need to read
+        step_index = next(i for i, x in enumerate(gpu_info) if x.startswith('+---'))
         general_info = []
-        for i in range(len(gpu_info) // 3):
-            name_line = gpu_info[3 * i].split()
-            info_line = [' '] + gpu_info[3 * i + 1][1:].split()
+        for i in range(len(gpu_info) //(step_index+1)):
+            name_line = gpu_info[(step_index+1) * i].split()
+            info_line = [' '] + gpu_info[(step_index+1) * i + 1][1:].split()
 
             d = {}
             d['gpu_id'] = int(parse(name_line[1]))
