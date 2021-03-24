@@ -114,7 +114,7 @@ class NvidiaSMI:
                 elif len(line_split) == 7:
                     (_, gpu_id, pid, tp, name, gpu_mem, _) = line_split
                 else:
-                    pass
+                    continue
 
                 ps_line = PIDInfo(pid).info
                 (user, pid, cpu, mem, vsz, rss, tty, stat, start, time) = \
