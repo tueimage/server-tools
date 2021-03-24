@@ -19,6 +19,7 @@ class NvidiaSMI:
     def __init__(self, test_mode=False):
         # If we are not in test mode.. then continue
         if test_mode:
+            print('We have entered Test mode')
             with open('nvtop/nvidia_smi_L.txt', 'r') as f:
                 self.gpu_names = f.read().split('\n')[:-1]
             with open('nvtop/nvidia_output_test.txt', 'r') as f:
@@ -106,7 +107,15 @@ class NvidiaSMI:
         process_list = []
         for line in process_lines:
             try:
-                (_, gpu_id, pid, tp, name, gpu_mem, _) = line.split()
+                line_split = line.split()
+                # In the new update nvidia-smi output we receive two more columns of info
+                if len(line_split) == 9:
+                    (_, gpu_id, gi, ci, pid, tp, name, gpu_mem, _) = line_split
+                elif len(line_split) == 7:
+                    (_, gpu_id, pid, tp, name, gpu_mem, _) = line_split
+                else:
+                    pass
+
                 ps_line = PIDInfo(pid).info
                 (user, pid, cpu, mem, vsz, rss, tty, stat, start, time) = \
                     ps_line.split()[:10]
