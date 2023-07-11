@@ -77,7 +77,9 @@ class NvidiaSMI:
         for i in range(len(gpu_info) //(step_index+1)):
             name_line = gpu_info[(step_index+1) * i].split()
             info_line = [' '] + gpu_info[(step_index+1) * i + 1][1:].split()
-
+            # The power cap is increased to 250W, leaving no white space between 'W' and |
+            # This removes any '|' character in a potential string.
+            info_line = [x.strip('|') for x in info_line]
             d = {}
             d['gpu_id'] = int(parse(name_line[1]))
             d['name'] = ' '.join(self.gpu_names[i].split()[:-2])
@@ -92,10 +94,10 @@ class NvidiaSMI:
             d['perf'] = info_line[3]
             d['pwr_usage'] = int(parse(info_line[4][:-1]))
             d['pwr_cap'] = int(parse(info_line[6][:-1]))
-            d['mem_usage'] = int(parse(info_line[8][:-3]))
-            d['mem_cap'] = int(parse(info_line[10][:-3]))
-            d['gpu_util'] = int(parse(info_line[12][:-1]))
-            d['comput_m'] = info_line[13]
+            d['mem_usage'] = int(parse(info_line[7][:-3]))
+            d['mem_cap'] = int(parse(info_line[9][:-3]))
+            d['gpu_util'] = int(parse(info_line[11][:-1]))
+            d['comput_m'] = info_line[12]
 
             general_info.append(d)
         return general_info
